@@ -277,11 +277,19 @@ h1, h2, h3 {
 
         <!-- Central Node -->
         <div class="central-node" onclick="showInfo('central')">
-            <img src="https://skyagent-artifacts.skywork.ai/image/1989325414146588672/4997e8b7-55f7-4f99-b93a-77c81bb0ba7a/debt_income_ratio_icon_20251114133214_1.png" alt="RDI Icon" class="w-16 h-16 mb-2">
-            <h2 class="text-xl font-bold text-center">Relación Deuda-Ingresos</h2>
-            <p class="text-sm text-center mt-2">(RDI)</p>
-            <div class="text-xs text-center mt-2 opacity-80">Haz clic para más info</div>
-        </div>
+		    <lottie-player
+		        src="RECAUDO.json"   <!-- aquí pones tu ruta real -->
+		        background="transparent"
+		        speed="1"
+		        style="width: 80px; height: 80px; margin-bottom: 10px;"
+		        loop
+		        autoplay>
+		    </lottie-player>
+		
+		    <h2 class="text-xl font-bold text-center">Relación Deuda-Ingresos</h2>
+		    <p class="text-sm text-center mt-2">(RDI)</p>
+		    <div class="text-xs text-center mt-2 opacity-80">Haz clic para más info</div>
+		</div>
 
         <!-- Branch 1: Tipos de Crédito -->
         <div class="branch-node branch-1" onclick="showInfo('credit-types')">
