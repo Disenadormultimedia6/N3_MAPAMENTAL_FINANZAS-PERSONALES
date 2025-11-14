@@ -33,19 +33,15 @@
         opacity: 1;
     }
 }
-body {
-    font-family: "Nunito", sans-serif;
 html, body {
     font-family: "Nunito", sans-serif !important;
     font-optical-sizing: auto;
     font-weight: 400;   /* peso normal */
-    font-weight: 400;
     font-style: normal;
-}    
 }
+
 h1, h2, h3 {
     font-weight: 700;
-}
 }
 .central-node {
     position: absolute;
@@ -516,53 +512,83 @@ h1, h2, h3 {
                 `
             },
             warnings: {
-                title: "Señales de Alerta Financiera",
-                content: `
-                    <div class="space-y-4">
-                        <div class="alert alert-error">
-                            <span class="font-bold">🚨 Solo pagas mínimos en tarjeta (>3 meses)</span>
-                            <div class="text-sm mt-1">
-                                <strong>Por qué:</strong> La deuda casi no baja y el costo total sube<br>
-                                <strong>Qué hacer:</strong> Congela nuevos consumos; paga ≥2× el mínimo
-                            </div>
-                        </div>
-                        
-                        <div class="alert alert-error">
-                            <span class="font-bold">💳 Cubres una deuda con otra</span>
-                            <div class="text-sm mt-1">
-                                <strong>Por qué:</strong> Duplicas costos y te acercas al sobreendeudamiento<br>
-                                <strong>Qué hacer:</strong> Detén nuevas deudas; aplica estrategia avalancha o bola de nieve
-                            </div>
-                        </div>
-                        
-                        <div class="alert alert-warning">
-                            <span class="font-bold">📈 RDI al alza o >40% sostenido</span>
-                            <div class="text-sm mt-1">
-                                <strong>Por qué:</strong> Menos liquidez, más estrés y peores condiciones<br>
-                                <strong>Qué hacer:</strong> Recorta gastos discrecionales; objetivo RDI ≤35%
-                            </div>
-                        </div>
-                        
-                        <div class="alert alert-warning">
-                            <span class="font-bold">⏰ Retrasos o pagar esenciales con rotativo</span>
-                            <div class="text-sm mt-1">
-                                <strong>Por qué:</strong> Moras caras y brecha estructural en flujo<br>
-                                <strong>Qué hacer:</strong> Prioriza esenciales con débito automático
-                            </div>
-                        </div>
-                        
-                        <div class="alert alert-info">
-                            <span class="font-bold">💰 No puedes ahorrar ni sostener fondo de emergencia</span>
-                            <div class="text-sm mt-1">
-                                <strong>Por qué:</strong> Alta fragilidad ante imprevistos<br>
-                                <strong>Qué hacer:</strong> Activa micro-ahorro (5-10%); regla 70/30
-                            </div>
-                        </div>
+    title: "Señales de Alerta Financiera",
+    content: `
+        <div class="space-y-4">
 
-                    
-                    </div>
-                `
-            }
+            <!-- 1. Solo pagas mínimos -->
+            <div class="rounded-2xl bg-rose-500 text-white p-4 md:p-5 shadow-lg flex flex-col md:flex-row md:items-start gap-3">
+                <div class="flex items-start gap-2 md:w-1/3">
+                    <span class="text-2xl mt-1">🚨</span>
+                    <p class="font-semibold leading-tight">
+                        Solo pagas mínimos en tarjeta (&gt;3 meses)
+                    </p>
+                </div>
+                <div class="md:w-2/3 text-sm space-y-1">
+                    <p><span class="font-semibold">Por qué:</span> La deuda casi no baja y el costo total sube.</p>
+                    <p><span class="font-semibold">Qué hacer:</span> Congela nuevos consumos y paga al menos 2× el mínimo.</p>
+                </div>
+            </div>
+
+            <!-- 2. Cubres una deuda con otra -->
+            <div class="rounded-2xl bg-orange-400 text-white p-4 md:p-5 shadow-lg flex flex-col md:flex-row md:items-start gap-3">
+                <div class="flex items-start gap-2 md:w-1/3">
+                    <span class="text-2xl mt-1">💳</span>
+                    <p class="font-semibold leading-tight">
+                        Cubres una deuda con otra
+                    </p>
+                </div>
+                <div class="md:w-2/3 text-sm space-y-1">
+                    <p><span class="font-semibold">Por qué:</span> Duplicas costos y te acercas al sobreendeudamiento.</p>
+                    <p><span class="font-semibold">Qué hacer:</span> Detén nuevas deudas y aplica estrategia avalancha o bola de nieve.</p>
+                </div>
+            </div>
+
+            <!-- 3. RDI alto -->
+            <div class="rounded-2xl bg-amber-400 text-white p-4 md:p-5 shadow-lg flex flex-col md:flex-row md:items-start gap-3">
+                <div class="flex items-start gap-2 md:w-1/3">
+                    <span class="text-2xl mt-1">📈</span>
+                    <p class="font-semibold leading-tight">
+                        RDI al alza o &gt;40% sostenido
+                    </p>
+                </div>
+                <div class="md:w-2/3 text-sm space-y-1">
+                    <p><span class="font-semibold">Por qué:</span> Menos liquidez, más estrés y peores condiciones de crédito.</p>
+                    <p><span class="font-semibold">Qué hacer:</span> Recorta gastos discrecionales; busca llevar tu RDI a ≤35%.</p>
+                </div>
+            </div>
+
+            <!-- 4. Retrasos o gastos esenciales con rotativo -->
+            <div class="rounded-2xl bg-fuchsia-500 text-white p-4 md:p-5 shadow-lg flex flex-col md:flex-row md:items-start gap-3">
+                <div class="flex items-start gap-2 md:w-1/3">
+                    <span class="text-2xl mt-1">⏰</span>
+                    <p class="font-semibold leading-tight">
+                        Retrasos o pagar esenciales con rotativo
+                    </p>
+                </div>
+                <div class="md:w-2/3 text-sm space-y-1">
+                    <p><span class="font-semibold">Por qué:</span> Moras caras y brecha estructural en tu flujo mensual.</p>
+                    <p><span class="font-semibold">Qué hacer:</span> Prioriza servicios esenciales y automatiza pagos clave.</p>
+                </div>
+            </div>
+
+            <!-- 5. No puedes ahorrar -->
+            <div class="rounded-2xl bg-sky-500 text-white p-4 md:p-5 shadow-lg flex flex-col md:flex-row md:items-start gap-3">
+                <div class="flex items-start gap-2 md:w-1/3">
+                    <span class="text-2xl mt-1">💰</span>
+                    <p class="font-semibold leading-tight">
+                        No puedes ahorrar ni sostener fondo de emergencia
+                    </p>
+                </div>
+                <div class="md:w-2/3 text-sm space-y-1">
+                    <p><span class="font-semibold">Por qué:</span> Alta fragilidad ante imprevistos y mayor dependencia del crédito.</p>
+                    <p><span class="font-semibold">Qué hacer:</span> Activa microahorro (5–10%) y aplica regla 70/30 en tus ingresos.</p>
+                </div>
+            </div>
+
+        </div>
+    `
+}
         };
 
         function showInfo(section) {
