@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa Mental Interactivo: Crédito y Deuda - Relación Deuda-Ingresos (RDI)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <style>
+	/* Animaciones */
+@keyframes pop-center {
+    0% {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 0;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes pop-node {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+        
+.central-node {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    z-index: 10;
+    
+    /* Animación */
+    opacity: 0;
+    animation: pop-center 0.6s ease forwards 0.1s;
+}
+
+.central-node:hover {
+    transform: translate(-50%, -50%) scale(1.05);
+    box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+}
+
+.branch-node {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+    
+    /* Animación base */
+    opacity: 0;
+    animation: pop-node 0.6s ease forwards;
+}
+
+/* Delays para que aparezcan de forma escalonada */
+.branch-1 { 
+    top: 10%;
+    left: 20%;
+    background: linear-gradient(135deg, #10b981, #059669);
+    animation-delay: 0.3s;
+}
+
+.branch-2 { 
+    top: 10%;
+    right: 20%;
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    animation-delay: 0.5s;
+}
+
+.branch-3 { 
+    bottom: 10%;
+    left: 20%;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    animation-delay: 0.7s;
+}
+
+.branch-4 { 
+    bottom: 10%;
+    right: 20%;
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    animation-delay: 0.9s;
+}
+
+        .mind-map-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .central-node {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+        
+        .central-node:hover {
+            transform: translate(-50%, -50%) scale(1.05);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+        }
+        
+        .branch-node {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+        
+        .branch-node:hover {
+            transform: scale(1.1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        
+        .branch-1 {
+            top: 10%;
+            left: 20%;
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+        
+        .branch-2 {
+            top: 10%;
+            right: 20%;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        }
+        
+        .branch-3 {
+            bottom: 10%;
+            left: 20%;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .branch-4 {
+            bottom: 10%;
+            right: 20%;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+        
+        .connection-line {
+            position: absolute;
+            background: rgba(255,255,255,0.3);
+            height: 3px;
+            transform-origin: left center;
+            z-index: 1;
+        }
+        
+        .info-panel {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 500px;
+            height: 100vh;
+            background: white;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+            transition: right 0.3s ease;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        
+        .info-panel.active {
+            right: 0;
+        }
+        
+        .risk-indicator {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .risk-green { background-color: #10b981; }
+        .risk-yellow { background-color: #f59e0b; }
+        .risk-orange { background-color: #f97316; }
+        .risk-red { background-color: #ef4444; }
+        
+        .formula-box {
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+            border-left: 4px solid #4f46e5;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0.5rem;
+        }
+        
+        .sub-node {
+            background: rgba(255,255,255,0.9);
+            border-radius: 1rem;
+            padding: 1rem;
+            margin: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 4px solid;
+        }
+        
+        .sub-node:hover {
+            transform: translateX(10px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .credit-card { border-left-color: #8b5cf6; }
+        .personal-loan { border-left-color: #06b6d4; }
+        .education-loan { border-left-color: #10b981; }
+        .vehicle-loan { border-left-color: #f59e0b; }
+        .mortgage { border-left-color: #ef4444; }
+        .micro-credit { border-left-color: #84cc16; }
+        .bnpl { border-left-color: #f97316; }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="mind-map-container" id="mindMap">
+        <!-- Connection Lines -->
+        <div class="connection-line" style="top: 35%; left: 35%; width: 200px; transform: rotate(-45deg);"></div>
+        <div class="connection-line" style="top: 35%; right: 35%; width: 200px; transform: rotate(45deg);"></div>
+        <div class="connection-line" style="bottom: 35%; left: 35%; width: 200px; transform: rotate(45deg);"></div>
+        <div class="connection-line" style="bottom: 35%; right: 35%; width: 200px; transform: rotate(-45deg);"></div>
+        
+        <!-- Central Node -->
+        <div class="central-node" onclick="showInfo('central')">
+            <img src="https://skyagent-artifacts.skywork.ai/image/1989325414146588672/4997e8b7-55f7-4f99-b93a-77c81bb0ba7a/debt_income_ratio_icon_20251114133214_1.png" alt="RDI Icon" class="w-16 h-16 mb-2">
+            <h2 class="text-xl font-bold text-center">Relación Deuda-Ingresos</h2>
+            <p class="text-sm text-center mt-2">(RDI)</p>
+            <div class="text-xs text-center mt-2 opacity-80">Haz clic para más info</div>
+        </div>
+        
+        <!-- Branch 1: Tipos de Crédito -->
+        <div class="branch-node branch-1" onclick="showInfo('credit-types')">
+            <img src="https://skyagent-artifacts.skywork.ai/image/1989325414146588672/831533c5-d5fd-4286-9d6d-b4ba583fd4a0/credit_types_illustration_20251114133234_1.png" alt="Credit Types" class="w-12 h-12 mb-2">
+            <h3 class="text-lg font-bold text-center">Tipos de</h3>
+            <h3 class="text-lg font-bold text-center">Crédito</h3>
+        </div>
+        
+        <!-- Branch 2: Cálculos -->
+        <div class="branch-node branch-2" onclick="showInfo('calculations')">
+            <img src="https://skyagent-artifacts.skywork.ai/image/1989325414146588672/1f1cb029-c14e-4bf2-8aca-2cd04c86914b/financial_calculator_icon_20251114133253_1.png" alt="Calculator" class="w-12 h-12 mb-2">
+            <h3 class="text-lg font-bold text-center">Cálculo de</h3>
+            <h3 class="text-lg font-bold text-center">Intereses</h3>
+        </div>
+        
+        <!-- Branch 3: Estrategias -->
+        <div class="branch-node branch-3" onclick="showInfo('strategies')">
+            <div class="text-4xl mb-2">💡</div>
+            <h3 class="text-lg font-bold text-center">Estrategias de</h3>
+            <h3 class="text-lg font-bold text-center">Manejo</h3>
+        </div>
+        
+        <!-- Branch 4: Señales de Alerta -->
+        <div class="branch-node branch-4" onclick="showInfo('warnings')">
+            <img src="https://skyagent-artifacts.skywork.ai/image/1989325414146588672/56652d6b-cacf-4965-b045-5b03d81864cb/warning_signals_icon_20251114133313_1.png" alt="Warning Signals" class="w-12 h-12 mb-2">
+            <h3 class="text-lg font-bold text-center">Señales de</h3>
+            <h3 class="text-lg font-bold text-center">Alerta</h3>
+        </div>
+    </div>
+    
+    <!-- Info Panel -->
+    <div class="info-panel" id="infoPanel">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 id="panelTitle" class="text-2xl font-bold text-gray-800"></h2>
+                <button onclick="closeInfo()" class="btn btn-circle btn-sm">✕</button>
+            </div>
+            <div id="panelContent" class="text-gray-700"></div>
+        </div>
+    </div>
+    
+    <!-- RDI Calculator Modal -->
+    <div class="modal" id="calculatorModal">
+        <div class="modal-box w-11/12 max-w-2xl">
+            <h3 class="font-bold text-lg mb-4">Calculadora RDI</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="label">Ingreso Neto Mensual</label>
+                    <input type="number" id="monthlyIncome" class="input input-bordered w-full" placeholder="Ej: 50000">
+                </div>
+                <div>
+                    <label class="label">Total Cuotas de Deudas</label>
+                    <input type="number" id="totalDebts" class="input input-bordered w-full" placeholder="Ej: 15000">
+                </div>
+            </div>
+            <div class="mt-4">
+                <button onclick="calculateRDI()" class="btn btn-primary">Calcular RDI</button>
+            </div>
+            <div id="rdiResult" class="mt-4 p-4 rounded-lg hidden"></div>
+            <div class="modal-action">
+                <button onclick="closeCalculator()" class="btn">Cerrar</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const infoContent = {
+            central: {
+                title: "Relación Deuda-Ingresos (RDI)",
+                content: `
+                    <div class="space-y-4">
+                        <p class="text-lg">La Relación Deuda-Ingresos (RDI) indica qué proporción de tu ingreso neto mensual destinas al pago de todas tus deudas.</p>
+                        
+                        <div class="formula-box">
+                            <h4 class="font-bold text-lg mb-2">Fórmula:</h4>
+                            <p class="text-xl font-mono">RDI = (Cuotas totales de deudas / Ingreso neto mensual) × 100</p>
+                        </div>
+                        
+                        <div class="bg-white p-4 rounded-lg shadow">
+                            <h4 class="font-bold text-lg mb-3">Rangos Orientativos:</h4>
+                            <div class="space-y-2">
+                                <div class="flex items-center">
+                                    <span class="risk-indicator risk-green"></span>
+                                    <span><strong>≤ 30%:</strong> Saludable/Estable</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="risk-indicator risk-yellow"></span>
+                                    <span><strong>31-35%:</strong> Atención y ajustes</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="risk-indicator risk-orange"></span>
+                                    <span><strong>36-45%:</strong> Riesgo de tensión financiera</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="risk-indicator risk-red"></span>
+                                    <span><strong>> 45%:</strong> Sobreendeudamiento probable</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-lg mb-2">Impacto en la Salud Financiera:</h4>
+                            <ul class="list-disc list-inside space-y-1">
+                                <li><strong>Liquidez mensual:</strong> Mientras más alta la RDI, menos margen para ahorro/imprevistos</li>
+                                <li><strong>Costo del crédito:</strong> RDI alta suele implicar tasas peores y plazos más largos</li>
+                                <li><strong>Estrés y resiliencia:</strong> Aumenta el riesgo de mora ante shocks</li>
+                            </ul>
+                        </div>
+                        
+                        <button onclick="openCalculator()" class="btn btn-primary w-full">Calcular mi RDI</button>
+                    </div>
+                `
+            },
+            'credit-types': {
+                title: "Tipos de Crédito y sus Implicaciones",
+                content: `
+                    <div class="space-y-3">
+                        <div class="sub-node credit-card" onclick="showCreditDetail('credit-card')">
+                            <h4 class="font-bold">💳 Tarjeta de Crédito / Rotativo</h4>
+                            <p class="text-sm">Compras corrientes y pagos diferidos</p>
+                        </div>
+                        
+                        <div class="sub-node personal-loan" onclick="showCreditDetail('personal-loan')">
+                            <h4 class="font-bold">💰 Crédito de Consumo / Personal</h4>
+                            <p class="text-sm">Gastos puntuales (salud, educación, equipamiento)</p>
+                        </div>
+                        
+                        <div class="sub-node education-loan" onclick="showCreditDetail('education-loan')">
+                            <h4 class="font-bold">🎓 Crédito Educativo</h4>
+                            <p class="text-sm">Matrícula y posgrados</p>
+                        </div>
+                        
+                        <div class="sub-node vehicle-loan" onclick="showCreditDetail('vehicle-loan')">
+                            <h4 class="font-bold">🚗 Crédito Vehicular</h4>
+                            <p class="text-sm">Compra de vehículo (garantía prendaria)</p>
+                        </div>
+                        
+                        <div class="sub-node mortgage" onclick="showCreditDetail('mortgage')">
+                            <h4 class="font-bold">🏠 Crédito Hipotecario</h4>
+                            <p class="text-sm">Compra de vivienda (garantía real)</p>
+                        </div>
+                        
+                        <div class="sub-node micro-credit" onclick="showCreditDetail('micro-credit')">
+                            <h4 class="font-bold">🏪 Microcrédito / Emprendimiento</h4>
+                            <p class="text-sm">Capital de trabajo para negocios</p>
+                        </div>
+                        
+                        <div class="sub-node bnpl" onclick="showCreditDetail('bnpl')">
+                            <h4 class="font-bold">📱 "Compra ahora, paga después" (BNPL)</h4>
+                            <p class="text-sm">Fraccionar compras online</p>
+                        </div>
+                    </div>
+                `
+            },
+            calculations: {
+                title: "Cálculo de Intereses, Plazos y Pagos",
+                content: `
+                    <div class="space-y-4">
+                        <div class="bg-white p-4 rounded-lg shadow">
+                            <h4 class="font-bold text-lg mb-3">Conceptos Base:</h4>
+                            <ul class="list-disc list-inside space-y-1 text-sm">
+                                <li><strong>Principal (P):</strong> Monto prestado</li>
+                                <li><strong>TEA:</strong> Tasa Efectiva Anual</li>
+                                <li><strong>Tasa mensual (i):</strong> i = (1 + TEA)^(1/12) − 1</li>
+                                <li><strong>Plazo (n):</strong> Número de cuotas</li>
+                                <li><strong>Cuota (A):</strong> Pago periódico</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="formula-box">
+                            <h4 class="font-bold mb-2">Cuota en Sistema Francés:</h4>
+                            <p class="font-mono text-lg">A = [P · i] / [1 − (1 + i)^(-n)]</p>
+                        </div>
+                        
+                        <div class="bg-yellow-50 p-4 rounded-lg">
+                            <h4 class="font-bold mb-2">Ejemplo Educativo:</h4>
+                            <div class="grid grid-cols-2 gap-2 text-sm">
+                                <div><strong>Monto:</strong> $5,000,000</div>
+                                <div><strong>TEA:</strong> 24%</div>
+                                <div><strong>Plazo:</strong> 24 meses</div>
+                                <div><strong>Cuota:</strong> ≈ $258,663</div>
+                                <div><strong>Interés 1er mes:</strong> ≈ $90,438</div>
+                                <div><strong>Intereses totales:</strong> ≈ $1,207,917</div>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-warning">
+                            <span>⚠️ Plazos más largos reducen la cuota, pero elevan los intereses totales significativamente.</span>
+                        </div>
+                    </div>
+                `
+            },
+            strategies: {
+                title: "Estrategias para Manejo Responsable",
+                content: `
+                    <div class="space-y-4">
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-green-800 mb-2">🎯 Antes de Endeudarte:</h4>
+                            <ul class="list-disc list-inside space-y-1 text-sm text-green-700">
+                                <li>Calcula tu RDI y define un límite objetivo (≤ 30-35%)</li>
+                                <li>Asegura fondo de emergencia (≥ 1-3 meses)</li>
+                                <li>Aporta enganche/cuota inicial para reducir monto</li>
+                                <li>Compara TEA/CAT, comisiones y seguros</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-blue-800 mb-2">⚡ Durante el Crédito:</h4>
+                            <ul class="list-disc list-inside space-y-1 text-sm text-blue-700">
+                                <li>Paga más que el mínimo en tarjetas</li>
+                                <li>Elige táctica: avalancha (mayor tasa) o bola de nieve (saldos pequeños)</li>
+                                <li>Activa débito automático y recordatorios</li>
+                                <li>No uses crédito para gastos fijos recurrentes</li>
+                                <li>Revisa trimestralmente tu RDI</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-red-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-red-800 mb-2">🆘 Si te estás Ahogando:</h4>
+                            <ul class="list-disc list-inside space-y-1 text-sm text-red-700">
+                                <li>Detén nuevas deudas de consumo</li>
+                                <li>Negocia reperfilamiento solo si baja la TEA</li>
+                                <li>Prioriza servicios esenciales</li>
+                                <li>Busca asesoría profesional si RDI > 45%</li>
+                            </ul>
+                        </div>
+                    </div>
+                `
+            },
+            warnings: {
+                title: "Señales de Alerta Financiera",
+                content: `
+                    <div class="space-y-4">
+                        <div class="alert alert-error">
+                            <span class="font-bold">🚨 Solo pagas mínimos en tarjeta (>3 meses)</span>
+                            <div class="text-sm mt-1">
+                                <strong>Por qué:</strong> La deuda casi no baja y el costo total sube<br>
+                                <strong>Qué hacer:</strong> Congela nuevos consumos; paga ≥2× el mínimo
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-error">
+                            <span class="font-bold">💳 Cubres una deuda con otra</span>
+                            <div class="text-sm mt-1">
+                                <strong>Por qué:</strong> Duplicas costos y te acercas al sobreendeudamiento<br>
+                                <strong>Qué hacer:</strong> Detén nuevas deudas; aplica estrategia avalancha o bola de nieve
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-warning">
+                            <span class="font-bold">📈 RDI al alza o >40% sostenido</span>
+                            <div class="text-sm mt-1">
+                                <strong>Por qué:</strong> Menos liquidez, más estrés y peores condiciones<br>
+                                <strong>Qué hacer:</strong> Recorta gastos discrecionales; objetivo RDI ≤35%
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-warning">
+                            <span class="font-bold">⏰ Retrasos o pagar esenciales con rotativo</span>
+                            <div class="text-sm mt-1">
+                                <strong>Por qué:</strong> Moras caras y brecha estructural en flujo<br>
+                                <strong>Qué hacer:</strong> Prioriza esenciales con débito automático
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <span class="font-bold">💰 No puedes ahorrar ni sostener fondo de emergencia</span>
+                            <div class="text-sm mt-1">
+                                <strong>Por qué:</strong> Alta fragilidad ante imprevistos<br>
+                                <strong>Qué hacer:</strong> Activa micro-ahorro (5-10%); regla 70/30
+                            </div>
+                        </div>
+                    </div>
+                `
+            }
+        };
+        
+        function showInfo(section) {
+            const panel = document.getElementById('infoPanel');
+            const title = document.getElementById('panelTitle');
+            const content = document.getElementById('panelContent');
+            
+            title.textContent = infoContent[section].title;
+            content.innerHTML = infoContent[section].content;
+            panel.classList.add('active');
+        }
+        
+        function closeInfo() {
+            document.getElementById('infoPanel').classList.remove('active');
+        }
+        
+        function openCalculator() {
+            document.getElementById('calculatorModal').classList.add('modal-open');
+        }
+        
+        function closeCalculator() {
+            document.getElementById('calculatorModal').classList.remove('modal-open');
+        }
+        
+        function calculateRDI() {
+            const income = parseFloat(document.getElementById('monthlyIncome').value);
+            const debts = parseFloat(document.getElementById('totalDebts').value);
+            const resultDiv = document.getElementById('rdiResult');
+            
+            if (income && debts) {
+                const rdi = (debts / income * 100).toFixed(2);
+                let riskLevel, riskColor, recommendation;
+                
+                if (rdi <= 30) {
+                    riskLevel = "Saludable";
+                    riskColor = "bg-green-100 border-green-500 text-green-800";
+                    recommendation = "¡Excelente! Mantén este nivel y considera aumentar tu ahorro.";
+                } else if (rdi <= 35) {
+                    riskLevel = "Atención";
+                    riskColor = "bg-yellow-100 border-yellow-500 text-yellow-800";
+                    recommendation = "Nivel aceptable, pero considera reducir gastos o aumentar ingresos.";
+                } else if (rdi <= 45) {
+                    riskLevel = "Riesgo";
+                    riskColor = "bg-orange-100 border-orange-500 text-orange-800";
+                    recommendation = "Nivel de riesgo. Urgente revisar gastos y estrategia de deuda.";
+                } else {
+                    riskLevel = "Crítico";
+                    riskColor = "bg-red-100 border-red-500 text-red-800";
+                    recommendation = "Nivel crítico. Busca asesoría financiera profesional inmediatamente.";
+                }
+                
+                resultDiv.innerHTML = `
+                    <div class="border-l-4 p-4 ${riskColor}">
+                        <h4 class="font-bold text-lg">Tu RDI: ${rdi}%</h4>
+                        <p class="font-semibold">Nivel: ${riskLevel}</p>
+                        <p class="text-sm mt-2">${recommendation}</p>
+                    </div>
+                `;
+                resultDiv.classList.remove('hidden');
+            }
+        }
+        
+        function showCreditDetail(type) {
+            const details = {
+                'credit-card': {
+                    title: "Tarjeta de Crédito / Rotativo",
+                    content: `
+                        <div class="space-y-3">
+                            <div class="bg-purple-50 p-3 rounded">
+                                <h5 class="font-bold text-purple-800">Uso Típico:</h5>
+                                <p class="text-sm">Compras corrientes y pagos diferidos</p>
+                            </div>
+                            <div class="bg-blue-50 p-3 rounded">
+                                <h5 class="font-bold text-blue-800">Implicaciones:</h5>
+                                <ul class="text-sm list-disc list-inside">
+                                    <li>Tasa variable y comisiones</li>
+                                    <li>El pago mínimo prolonga la deuda</li>
+                                    <li>Conviene si pagas el total</li>
+                                </ul>
+                            </div>
+                            <div class="bg-red-50 p-3 rounded">
+                                <h5 class="font-bold text-red-800">Alertas:</h5>
+                                <ul class="text-sm list-disc list-inside">
+                                    <li>Avances en efectivo tienen costos altos</li>
+                                    <li>Evita financiar gastos fijos con rotativo</li>
+                                </ul>
+                            </div>
+                        </div>
+                    `
+                }
+                // Agregar más detalles para otros tipos de crédito...
+            };
+            
+            if (details[type]) {
+                document.getElementById('panelTitle').textContent = details[type].title;
+                document.getElementById('panelContent').innerHTML = details[type].content;
+            }
+        }
+        
+        // Cerrar panel al hacer clic fuera
+        document.addEventListener('click', function(e) {
+            const panel = document.getElementById('infoPanel');
+            const mindMap = document.getElementById('mindMap');
+            
+            if (e.target === mindMap) {
+                panel.classList.remove('active');
+            }
+        });
+        
+    </script>
+</body>
+</html>
